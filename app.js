@@ -791,11 +791,11 @@ function checkMobileRating(val, inputElement) {
   // ① 評価画面（答えと4択ボタンが出ている状態）の時の処理
   if (state.phase === 'rating') {
     let grade = -1;
-    // WXYZ に対応（全角・1234含む）
-    if (lastChar === 'w' || lastChar === 'ｗ' || lastChar === '1' || lastChar === '１') grade = 0;
-    else if (lastChar === 'x' || lastChar === 'ｘ' || lastChar === '2' || lastChar === '２') grade = 1;
-    else if (lastChar === 'y' || lastChar === 'ｙ' || lastChar === '3' || lastChar === '３') grade = 2;
-    else if (lastChar === 'z' || lastChar === 'ｚ' || lastChar === '4' || lastChar === '４') grade = 3;
+    // 「し・す・せ・そ」に対応（カタカナ・1234含む）
+    if (lastChar === 'し' || lastChar === 'シ' || lastChar === '1' || lastChar === '１') grade = 0;
+    else if (lastChar === 'す' || lastChar === 'ス' || lastChar === '2' || lastChar === '２') grade = 1;
+    else if (lastChar === 'せ' || lastChar === 'セ' || lastChar === '3' || lastChar === '３') grade = 2;
+    else if (lastChar === 'そ' || lastChar === 'ソ' || lastChar === '4' || lastChar === '４') grade = 3;
 
     if (grade !== -1) {
       inputElement.value = ''; // 判定に使った文字を消す
@@ -804,8 +804,8 @@ function checkMobileRating(val, inputElement) {
   } 
   // ② 単語カードモード（モード2）で、答えを見る前にキーを打った場合の処理
   else if (state.phase === 'question' && state.currentMode === 2) {
-    // カンマ(,)、ピリオド(.)、読点(、)、句点(。) のいずれかが入力された時だけめくる
-    if (lastChar === ',' || lastChar === '.' || lastChar === '、' || lastChar === '。') {
+    // ★ 「さ」または「サ」が入力された時だけめくる！
+    if (lastChar === 'さ' || lastChar === 'サ') {
       inputElement.value = '';
       showRatingPhase(false);
     } else {
@@ -820,19 +820,18 @@ function checkMobileRating(val, inputElement) {
       loadCurrentWord();
     });
   }
-  // ④ 【NEW!】入力モード（モード1）でスペル入力中の「ギブアップ」「強制スキップ」処理
+  // ④ 入力モード（モード1）でスペル入力中の「ギブアップ」「強制スキップ」処理
   else if (state.phase === 'question' && state.currentMode === 1) {
-    // Again (ギブアップ) の判定: 1, W, (, （
-    if (lastChar === '1' || lastChar === '１' || lastChar === 'w' || lastChar === 'ｗ' || lastChar === '(' || lastChar === '（') {
+    // Again (ギブアップ) の判定: 1, (, （, し, シ
+    if (lastChar === '1' || lastChar === '１' || lastChar === 'し' || lastChar === 'シ' || lastChar === '(' || lastChar === '（') {
       inputElement.value = val.slice(0, -1); // 打ってしまった記号を消す
       showAnswerThenAdvance(0);
     }
-    // Easy (強制スキップ) の判定: 4, Z, ), ）
-    else if (lastChar === '4' || lastChar === '４' || lastChar === 'z' || lastChar === 'ｚ' || lastChar === ')' || lastChar === '）') {
+    // Easy (強制スキップ) の判定: 4, ), ）, そ, ソ
+    else if (lastChar === '4' || lastChar === '４' || lastChar === 'そ' || lastChar === 'ソ' || lastChar === ')' || lastChar === '）') {
       inputElement.value = val.slice(0, -1); // 打ってしまった記号を消す
       showAnswerThenAdvance(3);
     }
-    // 普通のアルファベットならそのまま入力させる（何もしない）
   }
 }
 
