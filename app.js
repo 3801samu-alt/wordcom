@@ -650,17 +650,31 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== TOUCH SWIPE for Mode 3 =====
+// ============================================================
+// 音声モード（モード3）の画面全体スワイプ判定
+// ============================================================
 let m3StartX = 0;
-if (dom.m3TouchArea) {
-  dom.m3TouchArea.addEventListener('touchstart', e => {
+const pageMode3 = document.getElementById('page-mode3');
+
+if (pageMode3) {
+  // 画面のどこを触ってもスワイプのスタート位置を記録
+  pageMode3.addEventListener('touchstart', e => {
     m3StartX = e.changedTouches[0].clientX;
   }, { passive: true });
 
-  dom.m3TouchArea.addEventListener('touchend', e => {
-    if (activePage() !== 'page-mode3') return;
+  // 指を離した時にスワイプした距離を計算
+  pageMode3.addEventListener('touchend', e => {
+    if (state.currentMode !== 3 || activePage() !== 'page-mode3') return;
+    
     const diff = e.changedTouches[0].clientX - m3StartX;
-    if (diff > 60) handleRating(2);
-    else if (diff < -60) handleRating(0, true);
+    
+    if (diff > 50) {
+      // 右スワイプ（正解: Good）
+      handleRating(2);
+    } else if (diff < -50) {
+      // 左スワイプ（不正解: Again）
+      handleRating(0, true);
+    }
   });
 }
 
