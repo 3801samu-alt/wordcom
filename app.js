@@ -144,12 +144,52 @@ function customConfirm(msg, callback) {
   btnCancel.addEventListener('click', onCancel);
 }
 
-// ===== SPEECH =====
+// ============================================================
+// 高音質な音声を優先して選ぶ SPEECH 機能
+// ============================================================
+let bestEnVoice = null;
+let bestJaVoice = null;
+
+function setBestVoices() {
+  const voices = speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+
+  // 英語の高品質な声を探す（Google, Appleの高音質モデルなどを優先）
+  bestEnVoice = voices.find(v => v.name.includes('Google US English'))
+             || voices.find(v => v.name.includes('Samantha')) // iPhone/Macの自然な女性の声
+             || voices.find(v => v.name.includes('Alex'))     // Macの高音質な声
+             || voices.find(v => v.lang === 'en-US')
+             || voices.find(v => v.lang.startsWith('en'));
+
+  // 日本語の高品質な声を探す
+  bestJaVoice = voices.find(v => v.name.includes('Google 日本語'))
+             || voices.find(v => v.name.includes('Kyoko'))    // iPhone/Macの自然な女性の声
+             || voices.find(v => v.name.includes('Otoya'))
+             || voices.find(v => v.lang === 'ja-JP')
+             || voices.find(v => v.lang.startsWith('ja'));
+}
+
+// ブラウザが音声リストの準備を終えたら、一番良い声をセットする
+if (speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = setBestVoices;
+}
+// 念のため起動直後にも探しておく
+setTimeout(setBestVoices, 500);
+
 function speak(text, lang) {
   if (!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(text);
+  
+  // 見つけておいた「良い声」をセットする
+  if (lang === 'en' && bestEnVoice) {
+    u.voice = bestEnVoice;
+  } else if (lang === 'ja' && bestJaVoice) {
+    u.voice = bestJaVoice;
+  }
+  
   u.lang = lang === 'en' ? 'en-US' : 'ja-JP';
-  u.rate = 0.9;
+  u.rate = 0.9; // 読み上げ速度（0.9は少しゆっくり。1.0が標準速度）
+  
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
