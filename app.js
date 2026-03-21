@@ -767,3 +767,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+// ============================================================
+// スマホ（フリック入力）用の隠しキーボード判定
+// ============================================================
+if (dom.mobileKbInput) {
+  dom.mobileKbInput.addEventListener('input', () => {
+    const val = dom.mobileKbInput.value;
+    dom.mobileKbInput.value = ''; 
+    
+    if (!val) return;
+    
+    const lastChar = val[val.length - 1].toLowerCase();
+
+    if (state.phase === 'rating') {
+      if (lastChar === 'u') {
+        handleRating(0); // Again
+      } else if (lastChar === 'v') {
+        handleRating(1); // Hard
+      } else if (lastChar === '"' || lastChar === '”' || lastChar === '“') {
+        handleRating(2); // Good
+      } else if (lastChar === '8' || lastChar === '８') {
+        handleRating(3); // Easy
+      }
+    } 
+    else if (state.phase === 'question' && state.currentMode === 2) {
+      showRatingPhase(false);
+    }
+  });
+}
