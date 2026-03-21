@@ -768,30 +768,59 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 // ============================================================
-// スマホ（フリック入力）用の隠しキーボード判定
+// スマホ（キーボード入力）用の判定（モード1 ＆ モード2 両対応）
 // ============================================================
-if (dom.mobileKbInput) {
-  dom.mobileKbInput.addEventListener('input', () => {
-    const val = dom.mobileKbInput.value;
-    dom.mobileKbInput.value = ''; 
-    
-    if (!val) return;
-    
-    const lastChar = val[val.length - 1].toLowerCase();
+function checkMobileRating(val, inputElement) {
+  if (!val) return;
+  const lastChar = val[val.length - 1].toLowerCase();
 
-    if (state.phase === 'rating') {
-      if (lastChar === 'u') {
-        handleRating(0); // Again
-      } else if (lastChar === 'v') {
-        handleRating(1); // Hard
-      } else if (lastChar === '"' || lastChar === '”' || lastChar === '“') {
-        handleRating(2); // Good
-      } else if (lastChar === '8' || lastChar === '８') {
-        handleRating(3); // Easy
-      }
-    } 
-    else if (state.phase === 'question' && state.currentMode === 2) {
-      showRatingPhase(false);
+  // ① 評価画面（答えと4択ボタンが出ている状態）の時の処理
+  if (state.phase === 'rating') {
+    let grade = -1;
+    // WXYZ に対応（全角・1234含む）
+    if (lastChar === 'w' || lastChar === 'ｗ' || lastChar === '1' || lastChar === '１') grade = 0;
+    else if (lastChar === 'x' || lastChar === 'ｘ' || lastChar === '2' || lastChar === '２') grade = 1;
+    else if (lastChar === 'y' || lastChar === 'ｙ' || lastChar === '3' || lastChar === '３') grade = 2;
+    else if (lastChar === 'z' || lastChar === 'ｚ' || lastChar === '4' || lastChar === '４') grade = 3;
+
+    if (grade !== -1) {
+      inputElement.value = ''; // 判定に使った文字を消す
+      handleRating(grade);
     }
+  } 
+  // ② 単語カードモード（モード2）で、答えを見る前にキーを打った場合の処理
+  else if (state.phase === 'question' && state.currentMode === 2) {
+    // カンマ(,)、ピリオド(.)、読点(、)、句点(。) のいずれかが入力された時だけめくる！
+    if (lastChar === ',' || lastChar === '.' || lastChar === '、' || lastChar === '。') {
+      inputElement.value = '';
+      showRatingPhase(false);
+    } else {
+      inputElement.value = ''; // 関係ないキーは無視する
+    }
+  }
+  // ③ 【NEW!】入力モード（モード1）で「正解」や「ギブアップ」後の確認画面の処理
+  else if (state.phase === 'answered') {
+    // 適当なキー（何でもOK）が入力されたら、次の単語へ進む！
+    inputElement.value = '';
+    state.currentIndex++;
+    
+    // 入力モードのまま次へ進む場合、フォーカスを再設定するため少し遅延させる
+    requestAnimationFrame(() => {
+      loadCurrentWord();
+    });
+  }
+}
+
+// 単語カードモード（モード2）の隠し入力欄用
+if (dom.mobileKbInput) {
+  dom.mobileKbInput.addEventListener('input', (e) => {
+    checkMobileRating(e.target.value, e.target);
+  });
+}
+
+// 入力モード（モード1）のメイン入力欄用
+if (dom.studyInput) {
+  dom.studyInput.addEventListener('input', (e) => {
+    checkMobileRating(e.target.value, e.target);
   });
 }
