@@ -804,7 +804,7 @@ function checkMobileRating(val, inputElement) {
   } 
   // ② 単語カードモード（モード2）で、答えを見る前にキーを打った場合の処理
   else if (state.phase === 'question' && state.currentMode === 2) {
-    // カンマ(,)、ピリオド(.)、読点(、)、句点(。) のいずれかが入力された時だけめくる！
+    // カンマ(,)、ピリオド(.)、読点(、)、句点(。) のいずれかが入力された時だけめくる
     if (lastChar === ',' || lastChar === '.' || lastChar === '、' || lastChar === '。') {
       inputElement.value = '';
       showRatingPhase(false);
@@ -812,16 +812,27 @@ function checkMobileRating(val, inputElement) {
       inputElement.value = ''; // 関係ないキーは無視する
     }
   }
-  // ③ 【NEW!】入力モード（モード1）で「正解」や「ギブアップ」後の確認画面の処理
+  // ③ 入力モード（モード1）で「正解」や「ギブアップ」後の確認画面の処理
   else if (state.phase === 'answered') {
-    // 適当なキー（何でもOK）が入力されたら、次の単語へ進む！
     inputElement.value = '';
     state.currentIndex++;
-    
-    // 入力モードのまま次へ進む場合、フォーカスを再設定するため少し遅延させる
     requestAnimationFrame(() => {
       loadCurrentWord();
     });
+  }
+  // ④ 【NEW!】入力モード（モード1）でスペル入力中の「ギブアップ」「強制スキップ」処理
+  else if (state.phase === 'question' && state.currentMode === 1) {
+    // Again (ギブアップ) の判定: 1, W, (, （
+    if (lastChar === '1' || lastChar === '１' || lastChar === 'w' || lastChar === 'ｗ' || lastChar === '(' || lastChar === '（') {
+      inputElement.value = val.slice(0, -1); // 打ってしまった記号を消す
+      showAnswerThenAdvance(0);
+    }
+    // Easy (強制スキップ) の判定: 4, Z, ), ）
+    else if (lastChar === '4' || lastChar === '４' || lastChar === 'z' || lastChar === 'ｚ' || lastChar === ')' || lastChar === '）') {
+      inputElement.value = val.slice(0, -1); // 打ってしまった記号を消す
+      showAnswerThenAdvance(3);
+    }
+    // 普通のアルファベットならそのまま入力させる（何もしない）
   }
 }
 
