@@ -844,13 +844,9 @@ function checkMobileRating(val, inputElement) {
   } 
   // ② 単語カードモード（モード2）で、答えを見る前にキーを打った場合の処理
   else if (state.phase === 'question' && state.currentMode === 2) {
-    // ★ 「a」または「ａ」が入力された時だけめくる！
-    if (lastChar === 'a' || lastChar === 'ａ') {
-      inputElement.value = '';
-      showRatingPhase(false);
-    } else {
-      inputElement.value = ''; // 関係ないキーは無視する
-    }
+    // ★ 何のキーを押しても答えをめくる！
+    inputElement.value = '';
+    showRatingPhase(false);
   }
   // ③ 入力モード（モード1）で「正解」や「ギブアップ」後の確認画面の処理
   else if (state.phase === 'answered') {
