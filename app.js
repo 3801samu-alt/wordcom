@@ -26,8 +26,9 @@ const state = {
 };
 
 // ===== DOM CACHE =====
+// ===== DOM CACHE =====
 const $ = id => document.getElementById(id);
-const dom = {
+const dom = { // ⬅️ これを復活させてください！
   btnBack: $('btn-back'),
   btnUndo: $('btn-undo'),
   btnQuit: $('btn-quit'),
@@ -787,14 +788,14 @@ function checkMobileRating(val, inputElement) {
 
   if (state.phase === 'rating') {
     let grade = -1;
-    // b/き/d/1 対応
-    if (lastChar === 'b' || lastChar === 'ｂ' || lastChar === 'き' || lastChar === 'd' || lastChar === 'ｄ' || lastChar === '1' || lastChar === '１') grade = 0;
-    // c/く/r/2 対応
-    else if (lastChar === 'c' || lastChar === 'ｃ' || lastChar === 'く' || lastChar === 'r' || lastChar === 'ｒ' || lastChar === '2' || lastChar === '２') grade = 1;
-    // f/す/g/3 対応
-    else if (lastChar === 'f' || lastChar === 'ｆ' || lastChar === 'す' || lastChar === 'g' || lastChar === 'ｇ' || lastChar === '3' || lastChar === '３') grade = 2;
-    // -/せ/h/4 対応
-    else if (lastChar === '-' || lastChar === 'ー' || lastChar === 'せ' || lastChar === 'h' || lastChar === 'ｈ' || lastChar === '4' || lastChar === '４') grade = 3;
+    // b/き/1 対応
+    if (lastChar === 'b' || lastChar === 'ｂ' || lastChar === 'き' || lastChar === '1' || lastChar === '１') grade = 0;
+    // c/く/2 対応
+    else if (lastChar === 'c' || lastChar === 'ｃ' || lastChar === 'く' || lastChar === '2' || lastChar === '２') grade = 1;
+    // f/す/3 対応
+    else if (lastChar === 'f' || lastChar === 'ｆ' || lastChar === 'す' || lastChar === '3' || lastChar === '３') grade = 2;
+    // -/せ/4 対応
+    else if (lastChar === '-' || lastChar === 'ー' || lastChar === 'せ' || lastChar === '4' || lastChar === '４') grade = 3;
 
     if (grade !== -1) {
       inputElement.value = ''; 
@@ -813,11 +814,11 @@ function checkMobileRating(val, inputElement) {
     });
   }
   else if (state.phase === 'question' && state.currentMode === 1) {
-    if (lastChar === '1' || lastChar === '１' || lastChar === 'b' || lastChar === 'ｂ' || lastChar === 'き' || lastChar === 'd' || lastChar === 'ｄ' || lastChar === '(' || lastChar === '（') {
+    if (lastChar === '1' || lastChar === '１' || lastChar === 'b' || lastChar === 'ｂ' || lastChar === 'き' || lastChar === '(' || lastChar === '（') {
       inputElement.value = val.slice(0, -1);
       showAnswerThenAdvance(0);
     }
-    else if (lastChar === '4' || lastChar === '４' || lastChar === '-' || lastChar === 'ー' || lastChar === 'せ' || lastChar === 'h' || lastChar === 'ｈ' || lastChar === ')' || lastChar === '）') {
+    else if (lastChar === '4' || lastChar === '４' || lastChar === '-' || lastChar === 'ー' || lastChar === 'せ' || lastChar === ')' || lastChar === '）') {
       inputElement.value = val.slice(0, -1);
       showAnswerThenAdvance(3);
     }
