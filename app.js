@@ -831,11 +831,11 @@ function checkMobileRating(val, inputElement) {
   // ① 評価画面（答えと4択ボタンが出ている状態）の時の処理
   if (state.phase === 'rating') {
     let grade = -1;
-    // 「b・c・f・e」に対応（全角・1234含む）
-    if (lastChar === 'b' || lastChar === 'ｂ' || lastChar === '1' || lastChar === '１') grade = 0;
-    else if (lastChar === 'c' || lastChar === 'ｃ' || lastChar === '2' || lastChar === '２') grade = 1;
-    else if (lastChar === 'f' || lastChar === 'ｆ' || lastChar === '3' || lastChar === '３') grade = 2;
-    else if (lastChar === 'e' || lastChar === 'ｅ' || lastChar === '4' || lastChar === '４') grade = 3;
+    // 「b(き)・c(く)・f(す)・-(せ)」に対応（全角・1234含む）
+    if (lastChar === 'b' || lastChar === 'ｂ' || lastChar === 'き' || lastChar === '1' || lastChar === '１') grade = 0;
+    else if (lastChar === 'c' || lastChar === 'ｃ' || lastChar === 'く' || lastChar === '2' || lastChar === '２') grade = 1;
+    else if (lastChar === 'f' || lastChar === 'ｆ' || lastChar === 'す' || lastChar === '3' || lastChar === '３') grade = 2;
+    else if (lastChar === '-' || lastChar === 'ー' || lastChar === 'せ' || lastChar === '4' || lastChar === '４') grade = 3;
 
     if (grade !== -1) {
       inputElement.value = ''; // 判定に使った文字を消す
@@ -858,13 +858,13 @@ function checkMobileRating(val, inputElement) {
   }
   // ④ 入力モード（モード1）でスペル入力中の「ギブアップ」「強制スキップ」処理
   else if (state.phase === 'question' && state.currentMode === 1) {
-    // Again (ギブアップ) の判定: 1, (, （, b, ｂ
-    if (lastChar === '1' || lastChar === '１' || lastChar === 'b' || lastChar === 'ｂ' || lastChar === '(' || lastChar === '（') {
+    // Again (ギブアップ) の判定: 1, (, （, b, ｂ, き
+    if (lastChar === '1' || lastChar === '１' || lastChar === 'b' || lastChar === 'ｂ' || lastChar === 'き' || lastChar === '(' || lastChar === '（') {
       inputElement.value = val.slice(0, -1); // 打ってしまった記号を消す
       showAnswerThenAdvance(0);
     }
-    // Easy (強制スキップ) の判定: 4, ), ）, e, ｅ
-    else if (lastChar === '4' || lastChar === '４' || lastChar === 'e' || lastChar === 'ｅ' || lastChar === ')' || lastChar === '）') {
+    // Easy (強制スキップ) の判定: 4, ), ）, -, ー, せ
+    else if (lastChar === '4' || lastChar === '４' || lastChar === '-' || lastChar === 'ー' || lastChar === 'せ' || lastChar === ')' || lastChar === '）') {
       inputElement.value = val.slice(0, -1); // 打ってしまった記号を消す
       showAnswerThenAdvance(3);
     }
